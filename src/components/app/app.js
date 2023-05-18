@@ -9,7 +9,7 @@ import './app.css';
 const App = () => {
 
     const todoData = [
-        {label: 'Completed taskbek', status: 'completed', id: 1},
+        {label: 'Completed task', status: 'completed', id: 1},
         {label: 'Editing task', status: 'editing', id: 2},
         {label: 'Active task', status: 'active', id: 3},
     ];
