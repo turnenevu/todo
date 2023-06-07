@@ -19,7 +19,11 @@ class App extends React.Component {
                 {label: 'Editing task', checked: false, edited: false, id: 2},
                 {label: 'Active task', checked: false, edited: false, id: 3},
             ],
-            filter: 'All',
+            filter: [
+                {name: 'All', selected: true, id: 1},
+                {name: 'Active', selected: false, id: 2},
+                {name: 'Completed', selected: false, id: 3},
+            ],
         };
         this.addItem = this.addItem.bind(this);
         this.edited = this.edited.bind(this);
@@ -28,19 +32,19 @@ class App extends React.Component {
         this.changeFilter = this.changeFilter.bind(this);
     }
 
-    checked(props) {
+    checked(id) {
         this.setState(({ todoData }) => {
-            const index = searchIndex(todoData, props);
-            const current = todoData.slice();
-            current[index].checked = !current[index].checked;
-
+            const index = searchIndex(todoData, id);
+            const current = [...todoData];
+            current[index] = { ...current[index], checked: !current[index].checked };
+            
             return { todoData:  current };
         })
     }
 
-    deleteItem(props) {
+    deleteItem(id) {
         this.setState(({ todoData }) => {
-            const index = searchIndex(todoData, props);
+            const index = searchIndex(todoData, id);
             const current = todoData.filter((item, idx) => idx !== index );
 
             return {
@@ -49,7 +53,7 @@ class App extends React.Component {
         });
     }
 
-    addItem(props) {
+    addItem(label) {
         this.setState(({ todoData }) => {
             let newId = 1;
             todoData.forEach( item => {
@@ -58,16 +62,16 @@ class App extends React.Component {
             });
 
             return {
-                todoData:  todoData.concat({ label: props, checked: false, edited: false, id: newId })
+                todoData:  todoData.concat({ label: label, checked: false, edited: false, id: newId })
             };
         });
     }
-    edited(props) {
+    edited(id) {
         this.setState(({ todoData }) => {
-            const index = searchIndex(todoData, props);
-            const current = todoData.slice();
+            const index = searchIndex(todoData, id);
+            const current = [...todoData];
             if(!current[index].checked)
-                current[index].edited = !current[index].edited;
+                current[index] = { ...current[index], edited: !current[index].edited };
 
             return { todoData:  current };
         })
@@ -76,8 +80,8 @@ class App extends React.Component {
     editItem(id, value) {
         this.setState(({ todoData }) => {
             const index = searchIndex(todoData, id);
-            const current = todoData.slice();
-            current[index].label = value;
+            const current = [...todoData];
+            current[index] = { ...current[index], label: value };
 
             return { todoData:  current };
         });
@@ -90,26 +94,53 @@ class App extends React.Component {
         })
     }
 
-    changeFilter(props) {
-        this.setState({ filter:  props });
+    changeFilter(id) {
+        this.setState(({ filter }) => {
+            const selectedFilter = filter.filter(item => item.selected);
+            const before = searchIndex(filter, selectedFilter[0].id);
+            const after = searchIndex(filter, id);
+
+            const current = [...filter];
+            current[before] = { ...current[before], selected: !current[before].selected };
+            current[after] = { ...current[after], selected: !current[after].selected };
+
+            return { filter:  current };
+        });
     }
 
     render() {
-        const todoData = this.state.todoData;
+        const selectedFilter = this.state.filter.filter(item => item.selected);
+        const name = selectedFilter[0].name;
+        const todoData = this.state.todoData.filter(item => {
+            if (name === 'All') {
+                return item;
+            } else if (name === 'Active' && !item.checked) {
+                return item;
+            } else if (name === 'Completed' && item.checked) {
+                return item;
+            }
+
+            return null;
+        });
+
         const filter = this.state.filter;
+        const done = this.state.todoData.filter(item => !item.checked).length;
 
         return (
             <div className="todoapp">
                 <NewTaskForm onAdded={this.addItem} />
                 <div className="main">
                     <TaskList todos={todoData}
-                              filter={filter}
                               onChecked={(props) => this.checked.bind(this, props)}
                               onDeleted={(props) => this.deleteItem.bind(this, props)}
                               onEdited={this.edited}
                               onEditItem={this.editItem} />
                 </div>
-                <Footer done={todoData} filter={filter} onCleared={this.clearChecked} changeFilter={this.changeFilter}/>
+                <Footer done={done}
+                        selectedFilterName={name}
+                        filter={filter}
+                        onCleared={this.clearChecked}
+                        changeFilter={this.changeFilter} />
             </div>
         );
     }

@@ -8,59 +8,46 @@ class TaskList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleButtonClick = this.handleButtonClick.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.editButtonClick = this.editButtonClick.bind(this);
+        this.editInputChange = this.editInputChange.bind(this);
+        this.closeInputChange = this.closeInputChange.bind(this);
     }
 
-    handleButtonClick(...props) {
-        const [ id ] = [...props];
+    editButtonClick(id) {
         this.props.onEdited(id);
     }
 
-    handleChange(...props) {
-        const [ id, e ] = [...props];
+    editInputChange(id, e) {
         this.props.onEditItem(id, e.target.value);
     }
 
-    handleKeyDown(...props) {
-        const [ id, e ] = [...props];
+    closeInputChange(id, e) {
         if (e.key === 'Enter') {
             this.props.onEdited(id);
         }
     }
 
     render() {
-        const filter = this.props.todos.filter(item => {
-            if (this.props.filter === 'All') {
-                return item;
-            }
-            if (this.props.filter === 'Active' && !item.checked) {
-                return item;
-            } else if (this.props.filter === 'Completed' && item.checked) {
-                return item;
-            }
-
-            return null;
-        });
-
-        const elements = filter.map(item => {
-            const { id, checked, edited, ...itemProps} = item;
+        const elements = this.props.todos.map(item => {
+            const { id, checked, edited, label} = item;
             const editInput = <input type="text"
                                      className="edit"
+                                     autoFocus={true}
                                      value={item.label}
-                                     onKeyDown={this.handleKeyDown.bind(this, id)}
-                                     onChange={this.handleChange.bind(this, id)} />;
+                                     onChange={this.editInputChange.bind(this, id)}
+                                     onKeyDown={this.closeInputChange.bind(this, id)} />;
+
             let classNames = checked ? 'completed' : edited ? 'editing' : null;
 
             return (
                 <li key={id} className={classNames}>
-                    <Task { ...itemProps }
+                    <Task id={id}
+                          label={label}
                           checked={checked}
                           onChecked={this.props.onChecked(id)}
                           onDeleted={this.props.onDeleted(id)}
-                          onEdited={this.handleButtonClick.bind(this, id)}
-                          id={id} />
+                          onEdited={this.editButtonClick.bind(this, id)} />
+
                     {edited ? editInput : null}
                 </li>
             );
