@@ -15,9 +15,9 @@ class App extends React.Component {
         super(props);
         this.state = {
             todoData: [
-                {label: 'Completed task', checked: false, edited: false, id: 1},
-                {label: 'Editing task', checked: false, edited: false, id: 2},
-                {label: 'Active task', checked: false, edited: false, id: 3},
+                {label: 'Completed task', date: new Date(), checked: false, edited: false, id: 1},
+                {label: 'Editing task', date: new Date(), checked: false, edited: false, id: 2},
+                {label: 'Active task', date: new Date(), checked: false, edited: false, id: 3},
             ],
             filter: [
                 {name: 'All', selected: true, id: 1},
@@ -62,7 +62,7 @@ class App extends React.Component {
             });
 
             return {
-                todoData:  todoData.concat({ label: label, checked: false, edited: false, id: newId })
+                todoData:  todoData.concat({ label: label, date: new Date(), checked: false, edited: false, id: newId })
             };
         });
     }

@@ -29,7 +29,7 @@ class TaskList extends React.Component {
 
     render() {
         const elements = this.props.todos.map(item => {
-            const { id, checked, edited, label} = item;
+            const { id, checked, edited, label, date} = item;
             const editInput = <input type="text"
                                      className="edit"
                                      autoFocus={true}
@@ -43,6 +43,7 @@ class TaskList extends React.Component {
                 <li key={id} className={classNames}>
                     <Task id={id}
                           label={label}
+                          date={date}
                           checked={checked}
                           onChecked={this.props.onChecked(id)}
                           onDeleted={this.props.onDeleted(id)}

@@ -11,7 +11,7 @@ class NewTaskForm extends React.Component {
 
 
     handleKeyDown(e) {
-        if (e.key === 'Enter' && e.target.value !== '') {
+        if (e.key === 'Enter' && e.target.value.trim() !== '') {
             this.props.onAdded(e.target.value);
             e.target.value = "";
         }
