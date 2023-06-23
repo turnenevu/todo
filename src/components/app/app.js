@@ -15,9 +15,6 @@ class App extends React.Component {
         super(props);
         this.state = {
             todoData: [
-                {label: 'Completed task', date: new Date(), checked: false, edited: false, id: 1},
-                {label: 'Editing task', date: new Date(), checked: false, edited: false, id: 2},
-                {label: 'Active task', date: new Date(), checked: false, edited: false, id: 3},
             ],
             filter: [
                 {name: 'All', selected: true, id: 1},
@@ -130,7 +127,7 @@ class App extends React.Component {
             <div className="todoapp">
                 <NewTaskForm onAdded={this.addItem} />
                 <div className="main">
-                    <TaskList todos={todoData}
+                    <TaskList todos={todoData.reverse()}
                               onChecked={(props) => this.checked.bind(this, props)}
                               onDeleted={(props) => this.deleteItem.bind(this, props)}
                               onEdited={this.edited}
