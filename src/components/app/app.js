@@ -127,7 +127,7 @@ class App extends React.Component {
     return (
       <div className="todoapp">
         <NewTaskForm onAdded={this.addItem} />
-        <div className="maina">
+        <div className="main">
           <TaskList
             todos={todoData.reverse()}
             onChecked={(props) => this.checked.bind(this, props)}
