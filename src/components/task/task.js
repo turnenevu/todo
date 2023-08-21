@@ -16,7 +16,12 @@ class Task extends React.Component {
       <div className="view">
         <input className="toggle" type="checkbox" checked={checked} onChange={props.onChecked} id={id} />
         <label htmlFor={id}>
-          <span className="description">{label}</span>
+          <span className="title">{label}</span>
+          <span className="description">
+            <button type="button" className="icon icon-play" />
+            <button type="button" className="icon icon-pause" />
+            {' 12:25'}
+          </span>
           <span className="created">created {distanceDate}</span>
         </label>
         <button type="button" className="icon icon-edit" onClick={props.onEdited} />

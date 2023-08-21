@@ -20,7 +20,11 @@ class NewTaskForm extends React.Component {
     return (
       <div className="header">
         <h1>todos</h1>
-        <input className="new-todo" placeholder="What needs to be done?" autoFocus onKeyDown={this.handleKeyDown} />
+        <form className="new-todo-form">
+          <input className="new-todo" placeholder="What needs to be done?" autoFocus onKeyDown={this.handleKeyDown} />
+          <input className="new-todo-form__timer" placeholder="Min" autoFocus />
+          <input className="new-todo-form__timer" placeholder="Sec" autoFocus />
+        </form>
       </div>
     );
   }
