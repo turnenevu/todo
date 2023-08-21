@@ -30,7 +30,7 @@ class TaskList extends React.Component {
   }
 
   render() {
-    const { todos, ...props } = this.props;
+    const { todos, timer, ...props } = this.props;
     const elements = todos.map((item) => {
       const { id, checked, edited, label, date } = item;
       const editInput = (
@@ -46,6 +46,8 @@ class TaskList extends React.Component {
 
       // eslint-disable-next-line no-nested-ternary
       const classNames = checked ? 'completed' : edited ? 'editing' : null;
+      // eslint-disable-next-line no-shadow
+      const itemTimer = timer.filter((item) => item.id === id);
 
       return (
         <li key={id} className={classNames}>
@@ -53,9 +55,12 @@ class TaskList extends React.Component {
             id={id}
             label={label}
             date={date}
+            timer={itemTimer[0].time}
             checked={checked}
             onChecked={props.onChecked(id)}
             onDeleted={props.onDeleted(id)}
+            onPlay={props.onPlay(id)}
+            onPause={props.onPause(id)}
             /* eslint-disable-next-line react/jsx-no-bind */
             onEdited={this.editButtonClick.bind(this, id)}
           />
