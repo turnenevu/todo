@@ -40,7 +40,11 @@ class App extends React.Component {
   }
 
   onPlay(id) {
-    this.setState(({ timer }) => {
+    this.setState(({ timer, todoData }) => {
+      const indexTodo = searchIndex(todoData, id);
+      const currentTodo = todoData.filter((item, idx) => idx === indexTodo);
+      if (currentTodo[0].checked) return {};
+
       const index = searchIndex(timer, id);
       const current = [...timer];
       current[index] = { ...current[index], active: true };
