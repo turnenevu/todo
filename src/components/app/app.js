@@ -20,12 +20,50 @@ class App extends React.Component {
         { name: 'Active', selected: false, id: 2 },
         { name: 'Completed', selected: false, id: 3 },
       ],
+      timer: [],
     };
     this.addItem = this.addItem.bind(this);
     this.edited = this.edited.bind(this);
     this.editItem = this.editItem.bind(this);
     this.clearChecked = this.clearChecked.bind(this);
     this.changeFilter = this.changeFilter.bind(this);
+    this.onPlay = this.onPlay.bind(this);
+    this.onPause = this.onPause.bind(this);
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  onPlay(id) {
+    this.setState(({ timer }) => {
+      const index = searchIndex(timer, id);
+      const current = [...timer];
+      current[index] = { ...current[index], active: true };
+
+      return { timer: current };
+    });
+  }
+
+  onPause(id) {
+    this.setState(({ timer }) => {
+      const index = searchIndex(timer, id);
+      const current = [...timer];
+      current[index] = { ...current[index], active: false };
+
+      return { timer: current };
+    });
+  }
+
+  tick() {
+    this.setState(({ timer }) => {
+      const current = [...timer].map((item) => (item.active ? { ...item, time: item.time + 1 } : { ...item }));
+      return { timer: current };
+    });
   }
 
   checked(id) {
@@ -36,28 +74,45 @@ class App extends React.Component {
 
       return { todoData: current };
     });
+    this.onPause(id);
   }
 
   deleteItem(id) {
-    this.setState(({ todoData }) => {
-      const index = searchIndex(todoData, id);
-      const current = todoData.filter((item, idx) => idx !== index);
+    this.setState(({ todoData, timer }) => {
+      const indexTodo = searchIndex(todoData, id);
+      const indexTimer = searchIndex(timer, id);
 
+      const currentTodo = todoData.filter((item, idx) => idx !== indexTodo);
+      const currentTimer = timer.filter((item, idx) => idx !== indexTimer);
       return {
-        todoData: current,
+        todoData: currentTodo,
+        timer: currentTimer,
       };
     });
   }
 
-  addItem(label) {
-    this.setState(({ todoData }) => {
+  addItem(label, min, sec) {
+    this.setState(({ todoData, timer }) => {
       let newId = 1;
       todoData.forEach((item) => {
         if (item.id >= newId) newId = item.id + 1;
       });
 
+      const time = Number(min) * 60 + Number(sec);
+
       return {
-        todoData: todoData.concat({ label, date: new Date(), checked: false, edited: false, id: newId }),
+        todoData: todoData.concat({
+          label,
+          date: new Date(),
+          checked: false,
+          edited: false,
+          id: newId,
+        }),
+        timer: timer.concat({
+          id: newId,
+          time,
+          active: false,
+        }),
       };
     });
   }
@@ -130,10 +185,13 @@ class App extends React.Component {
         <div className="main">
           <TaskList
             todos={todoData.reverse()}
+            timer={state.timer}
             onChecked={(props) => this.checked.bind(this, props)}
             onDeleted={(props) => this.deleteItem.bind(this, props)}
             onEdited={this.edited}
             onEditItem={this.editItem}
+            onPlay={(props) => this.onPlay.bind(this, props)}
+            onPause={(props) => this.onPause.bind(this, props)}
           />
         </div>
         <Footer
